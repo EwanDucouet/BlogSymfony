@@ -50,6 +50,11 @@ class User
      */
     private $comments;
 
+    /**
+     * @ORM\Column(type="json")
+     */
+    private $roles = [];
+
     public function __construct()
     {
         $this->articles = new ArrayCollection();
@@ -165,6 +170,18 @@ class User
                 $comment->setAuthor(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getRoles(): ?array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
 
         return $this;
     }

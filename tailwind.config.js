@@ -5,7 +5,14 @@ module.exports = {
     'assets/js/**/*.jsx',
   ],
   theme: {
-    extend: {},
+    extend: {
+      colors: {
+        'button-green': '#84947b',
+
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 }
