@@ -11,21 +11,32 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        // $product = new Product();
-        // $manager->persist($product);
         UserFactory::createOne([
-            'email' => 'admintest@test.com',
+            'email' => 'admin@admin.com',
             'roles' => ['ROLE_ADMIN'],
-            'username' => 'admintest'
+            'pseudo' => 'admin'
         ]);
         UserFactory::createOne([
-            'email' => 'usertest@test.com',
+            'email' => 'user@user.com',
             'roles' => ['ROLE_USER'],
-            'username' => 'usertest'
+            'pseudo' => 'user'
         ]);
         UserFactory::createMany(10);
 
-        ArticleFactory::createMany(10);
+        ArticleFactory::createOne([
+            'title' => 'Diirrnj huedhuze zudhzed izedi',
+            'categorie' => 'Plat',
+            'description' => 'Eijnerfeuh ifiuefiefiufuifnvehufn iofjerifenfioe efeozjfoei',
+            'creationDate' => new \DateTimeImmutable(),
+            'imageFile' => 'pathfile',
+            'idUser' =>  UserFactory::random()
+        ]);
+
+        ArticleFactory::createMany(5, function (){
+            return [
+                'idUser' =>  UserFactory::random()
+            ];
+        });
 
         $manager->flush();
     }

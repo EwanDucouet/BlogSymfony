@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\ContactRepository;
+use App\Repository\CommentairesRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ContactRepository::class)
+ * @ORM\Entity(repositoryClass=CommentairesRepository::class)
  */
-class Contact
+class Commentaires
 {
     /**
      * @ORM\Id
@@ -23,15 +23,19 @@ class Contact
     private $content;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="contacts")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="datetime")
+     */
+    private $creationDate;
+
+    /**
+     *@ORM\ManyToOne(targetEntity=User::class, inversedBy="commentaires")
      */
     private $idUser;
 
     /**
-     * @ORM\Column(type="boolean")
+     *@ORM\ManyToOne(targetEntity=Article::class, inversedBy="commentaires")
      */
-    private $ask_promote;
+    private $idArticle;
 
     /**
      * @ORM\Column(type="boolean")
@@ -55,26 +59,37 @@ class Contact
         return $this;
     }
 
-    public function getIdUser(): ?User
+    public function getCreationDate(): ?\DateTimeInterface
+    {
+        return $this->creationDate;
+    }
+
+    public function setCreationDate(\DateTimeInterface $creationDate): self
+    {
+        $this->creationDate = $creationDate;
+
+        return $this;
+    }
+
+    public function getIdUser(): ?user
     {
         return $this->idUser;
     }
 
-    public function setIdUser(?User $idUser): self
+    public function setIdUser(?user $idUser): self
     {
         $this->idUser = $idUser;
 
         return $this;
     }
-
-    public function getAskPromote(): ?bool
+    public function getIdArticle(): ?article
     {
-        return $this->ask_promote;
+        return $this->idArticle;
     }
 
-    public function setAskPromote(bool $ask_promote): self
+    public function setIdArticle(?article $idArticle): self
     {
-        $this->ask_promote = $ask_promote;
+        $this->idArticle = $idArticle;
 
         return $this;
     }

@@ -9,7 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class CreateArticleController extends AbstractController
 {
     /**
-     * @Route("/create_article", name="app_create_article")
+     * @Route("/create", name="app_create_article")
      */
     public function index(): Response
     {

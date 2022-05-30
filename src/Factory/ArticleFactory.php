@@ -3,9 +3,8 @@
 namespace App\Factory;
 
 use App\Entity\Article;
+use App\Entity\User;
 use App\Repository\ArticleRepository;
-use App\Factory\UserFactory;
-use phpDocumentor\Reflection\DocBlock\Tags\Author;
 use Zenstruck\Foundry\RepositoryProxy;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
@@ -41,11 +40,13 @@ final class ArticleFactory extends ModelFactory
     {
         return [
             // TODO add your default values here (https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories)
-            'title' => self::faker()->text(),
-            'text' => self::faker()->text(),
-            'date' => self::faker()->datetime(),
-            'type' => self::faker()->text(),
-            'Author' => UserFactory::random()
+            'title' => self::faker()->name(),
+            'categorie' => self::faker()->title(),
+            'description' => self::faker()->text(),
+            'creationDate' => self::faker()->dateTime(),
+            'imageFile' => 'imgs/bruschetta.jpg',
+            'idUser' =>  UserFactory::random(),
+            'deleted' => false
         ];
     }
 

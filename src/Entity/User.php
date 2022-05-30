@@ -6,12 +6,14 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @ORM\Table(name="`user`")
  */
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Id
@@ -19,97 +21,189 @@ class User
      * @ORM\Column(type="integer")
      */
     private $id;
-
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $username;
-
-    /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=180, unique=true)
      */
     private $email;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $password;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $profileImage;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Article::class, mappedBy="author")
-     */
-    private $articles;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="author")
-     */
-    private $comments;
-
     /**
      * @ORM\Column(type="json")
      */
     private $roles = [];
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $firstName;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $password;
+    private $plainPassword;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $imageFilename;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $pseudo;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $lastName;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Article::class, mappedBy="idUser")
+     */
+    private $article;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Commentaires::class, mappedBy="idUser")
+     */
+    private $commentaires;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Contact::class, mappedBy="idUser")
+     */
+    private $contacts;
 
     public function __construct()
     {
-        $this->articles = new ArrayCollection();
-        $this->comments = new ArrayCollection();
+        $this->contacts = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function getUsername(): ?string
-    {
-        return $this->username;
-    }
-
-    public function setUsername(string $username): self
-    {
-        $this->username = $username;
-
-        return $this;
-    }
-
     public function getEmail(): ?string
     {
         return $this->email;
     }
-
     public function setEmail(string $email): self
     {
         $this->email = $email;
 
         return $this;
     }
+    /**
+     * A visual identifier that represents this user.
+     *
+     * @see UserInterface
+     */
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+    /**
+     * @deprecated since Symfony 5.3, use getUserIdentifier instead
+     */
+    public function getUsername(): string
+    {
+        return (string) $this->email;
+    }
+    /**
+     * @see UserInterface
+     */
+    public function getRoles(): array
+    {
+        $roles = $this->roles;
+        // guarantee every user at least has ROLE_USER
+        $roles[] = 'ROLE_USER';
 
+        return array_unique($roles);
+    }
+    public function setRoles(array $roles): self
+    {
+        $this->roles = $roles;
+
+        return $this;
+    }
+    /**
+     * @see PasswordAuthenticatedUserInterface
+     */
     public function getPassword(): ?string
     {
         return $this->password;
     }
+    /**
+     * This method can be removed in Symfony 6.0 - is not needed for apps that do not check user passwords.
+     *
+     * @see UserInterface
+     */
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+    /**
+     * @see UserInterface
+     */
+    public function eraseCredentials()
+    {
+        // If you store any temporary, sensitive data on the user, clear it here
+        $this->plainPassword = null;
+    }
+    public function getFirstName(): ?string
+    {
+        return $this->firstName;
+    }
+    public function setFirstName(string $firstName): self
+    {
+        $this->firstName = $firstName;
 
+        return $this;
+    }
     public function setPassword(string $password): self
     {
         $this->password = $password;
 
         return $this;
     }
-
-    public function getProfileImage(): ?string
+    public function getPlainPassword(): ?string
     {
-        return $this->profileImage;
+        return $this->plainPassword;
+    }
+    public function setPlainPassword(string $plainPassword): self
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
     }
 
-    public function setProfileImage(?string $profileImage): self
+    public function getImageFilename(): ?string
     {
-        $this->profileImage = $profileImage;
+        return $this->imageFilename;
+    }
+
+    public function setImageFilename(?string $imageFilename): self
+    {
+        $this->imageFilename = $imageFilename;
+
+        return $this;
+    }
+
+    public function getPseudo(): ?string
+    {
+        return $this->pseudo;
+    }
+
+    public function setPseudo(string $pseudo): self
+    {
+        $this->pseudo = $pseudo;
+
+        return $this;
+    }
+
+    public function getLastName(): ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName(string $lastName): self
+    {
+        $this->lastName = $lastName;
 
         return $this;
     }
@@ -117,16 +211,16 @@ class User
     /**
      * @return Collection<int, Article>
      */
-    public function getArticles(): Collection
+    public function getArticle(): Collection
     {
-        return $this->articles;
+        return $this->article;
     }
 
     public function addArticle(Article $article): self
     {
-        if (!$this->articles->contains($article)) {
-            $this->articles[] = $article;
-            $article->setAuthor($this);
+        if (!$this->article->contains($article)) {
+            $this->article[] = $article;
+            $article->setIdUser($this);
         }
 
         return $this;
@@ -134,10 +228,10 @@ class User
 
     public function removeArticle(Article $article): self
     {
-        if ($this->articles->removeElement($article)) {
+        if ($this->article->removeElement($article)) {
             // set the owning side to null (unless already changed)
-            if ($article->getAuthor() === $this) {
-                $article->setAuthor(null);
+            if ($article->getIdUser() === $this) {
+                $article->setIdUser(null);
             }
         }
 
@@ -145,44 +239,63 @@ class User
     }
 
     /**
-     * @return Collection<int, Comment>
+     * @return Collection<int, Commentaires>
      */
-    public function getComments(): Collection
+    public function getCommentaires(): Collection
     {
-        return $this->comments;
+        return $this->commentaires;
     }
 
-    public function addComment(Comment $comment): self
+    public function addCommentaires(Commentaires $commentaires): self
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setAuthor($this);
+        if (!$this->commentaires->contains($commentaires)) {
+            $this->commentaires[] = $commentaires;
+            $commentaires->setIdUser($this);
         }
 
         return $this;
     }
 
-    public function removeComment(Comment $comment): self
+    public function removeCommentaires(Commentaires $commentaires): self
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->commentaires->removeElement($commentaires)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getAuthor() === $this) {
-                $comment->setAuthor(null);
+            if ($commentaires->getIdUser() === $this) {
+                $commentaires->setIdUser(null);
             }
         }
 
         return $this;
     }
 
-    public function getRoles(): ?array
+    /**
+     * @return Collection<int, Contact>
+     */
+    public function getContacts(): Collection
     {
-        return $this->roles;
+        return $this->contacts;
     }
 
-    public function setRoles(array $roles): self
+    public function addContact(Contact $contact): self
     {
-        $this->roles = $roles;
+        if (!$this->contacts->contains($contact)) {
+            $this->contacts[] = $contact;
+            $contact->setIdUser($this);
+        }
 
         return $this;
     }
+
+    public function removeContact(Contact $contact): self
+    {
+        if ($this->contacts->removeElement($contact)) {
+            // set the owning side to null (unless already changed)
+            if ($contact->getIdUser() === $this) {
+                $contact->setIdUser(null);
+            }
+        }
+
+        return $this;
+    }
+
 }

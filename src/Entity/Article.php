@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -24,40 +23,43 @@ class Article
      */
     private $title;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $image;
-
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $text;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="articles")
-     */
-    private $author;
-
-    /**
-     * @ORM\OneToMany(targetEntity=Comment::class, mappedBy="article")
-     */
-    private $comments;
-
-    /**
-     * @ORM\Column(type="date")
-     */
-    private $date;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $type;
+    private $categorie;
 
-    public function __construct()
-    {
-        $this->comments = new ArrayCollection();
-    }
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $description;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $creationDate;
+
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+
+    private $imageFile;
+
+    /**
+     *@ORM\ManyToOne(targetEntity=User::class, inversedBy="article")
+     */
+    private $idUser;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Commentaires::class, mappedBy="idArticle")
+     */
+    private $commentaires;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $deleted;
 
     public function getId(): ?int
     {
@@ -76,92 +78,104 @@ class Article
         return $this;
     }
 
-    public function getImage(): ?string
+    public function getCategorie(): ?string
     {
-        return $this->image;
+        return $this->categorie;
     }
 
-    public function setImage(?string $image): self
+    public function setCategorie(string $categorie): self
     {
-        $this->image = $image;
+        $this->categorie = $categorie;
 
         return $this;
     }
 
-    public function getText(): ?string
+    public function getDescription(): ?string
     {
-        return $this->text;
+        return $this->description;
     }
 
-    public function setText(string $text): self
+    public function setDescription(string $description): self
     {
-        $this->text = $text;
+        $this->description = $description;
 
         return $this;
     }
 
-    public function getAuthor(): ?User
+    public function getCreationDate(): ?\DateTimeInterface
     {
-        return $this->author;
+        return $this->creationDate;
     }
 
-    public function setAuthor(?User $author): self
+    public function setCreationDate(\DateTimeInterface $creationDate): self
     {
-        $this->author = $author;
+        $this->creationDate = $creationDate;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Comment>
+    public function getImageFile(): ?string
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageFile(string $imageFile): self
+    {
+        $this->imageFile = $imageFile;
+
+        return $this;
+    }
+
+    public function getIdUser(): ?user
+    {
+        return $this->idUser;
+    }
+
+    public function setIdUser(?user $idUser): self
+    {
+        $this->idUser = $idUser;
+
+        return $this;
+    }
+
+        /**
+     * @return Collection<int, Commentaires>
      */
-    public function getComments(): Collection
+    public function getCommentaires(): Collection
     {
-        return $this->comments;
+        return $this->commentaires;
     }
 
-    public function addComment(Comment $comment): self
+    public function addCommentaires(Commentaires $commentaires): self
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments[] = $comment;
-            $comment->setArticle($this);
+        if (!$this->commentaires->contains($commentaires)) {
+            $this->commentaires[] = $commentaires;
+            $commentaires->setIdArticle($this);
         }
 
         return $this;
     }
 
-    public function removeComment(Comment $comment): self
+    public function removeCommentaires(Commentaires $commentaires): self
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->commentaires->removeElement($commentaires)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getArticle() === $this) {
-                $comment->setArticle(null);
+            if ($commentaires->setIdArticle($this)) {
+                $commentaires->setIdArticle(null);
             }
         }
 
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDeleted(): ?bool
     {
-        return $this->date;
+        return $this->deleted;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDeleted(bool $deleted): self
     {
-        $this->date = $date;
-
-        return $this;
-    }
-
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType(string $type): self
-    {
-        $this->type = $type;
+        $this->deleted = $deleted;
 
         return $this;
     }
